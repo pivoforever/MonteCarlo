@@ -40,9 +40,18 @@ namespace MonteCarlo
             double max1 = Math.Sin(Xmin);
             double min1 = max1;
             double max2 = Math.Pow(Xmin, 2);
-            double min2 = max1;
-            double max3 = Math.Sqrt(Xmin);
-            double min3 = max1;
+            double min2 = max2;
+            double max3=0, min3=0;
+            if ((radioButton3.Checked == true) && (Xmin < 0))
+            {
+                MessageBox.Show("Введите положительное значение левой границы!", "Ошибка ввода", MessageBoxButtons.OK);
+                return;
+            }
+            else
+            {
+                max3 = Math.Sqrt(Xmin);
+                min3 = max3;
+            }
             for (int i = 0; i < count; i++)
             {
                 // Вычисляем значение X
@@ -72,17 +81,31 @@ namespace MonteCarlo
             if (radioButton1.Checked == true) { max = max1; min = min1; }
             else if (radioButton2.Checked == true) { max = max2; min = min2; }
             else if (radioButton3.Checked == true) { max = max3; min = min3; }
-            int cnt = 0;
+            if ((max >= 0) && (min >= 0)) min=0;
+            if ((max <= 0) && (min <= 0)) max = 0;
+            int cnt = 0, cntNeg = 0, Np=0, Nm=0;
             //Генерируем N случайных точек в прямоугольнике Xmin:Xmax/min:max
             for (int i = 0; i < N; i++)
             {
                 temp1 = rnd.NextDouble() * (Xmax - Xmin) + Xmin;
                 temp2 = rnd.NextDouble() * (max - min) + min;
+                if (temp2 >= 0) Np++;
+                else Nm++;
                 if (radioButton1.Checked == true)
                 {
-                    if (temp2 <= Math.Sin(temp1))
-                    { cnt++; randXred[i] = temp1; randYred[i] = temp2; }
-                    else { randX[i] = temp1; randY[i] = temp2; }
+                    if (Math.Sin(temp1) >= 0)
+                    {
+                        if ((temp2 <= Math.Sin(temp1))&&(temp2>=0))
+                        { cnt++; randXred[i] = temp1; randYred[i] = temp2; }
+                        else { randX[i] = temp1; randY[i] = temp2; }
+                    }
+                    else
+                    {
+                        if ((temp2 >= Math.Sin(temp1)) && (temp2 <= 0))
+                        { cntNeg++; randXred[i] = temp1; randYred[i] = temp2; }
+                        else { randX[i] = temp1; randY[i] = temp2; }
+                    }
+
                 }
                 else if (radioButton2.Checked == true)
                 {
@@ -111,7 +134,11 @@ namespace MonteCarlo
             chart1.Series[2].Points.DataBindXY(randXred, randYred);
             // Вычисляем значение интеграла
             double itog;
-            itog = (Xmax - Xmin) * (max - min) * cnt / N;
+            if ((Np != 0) && (Nm != 0))
+                itog = (Xmax - Xmin) * max * cnt / Np + (Xmax - Xmin) * min * cntNeg / Nm;
+            else
+                itog = (Xmax - Xmin) * (max+min) * (cnt+ cntNeg) / N;
+
             textBox1.Text = itog.ToString();
         }
     }
