@@ -33,6 +33,9 @@ namespace MonteCarlo
             // Массивы значений randX и randY
             double[] randX = new double[N];
             double[] randY = new double[N];
+            double[] randXred = new double[N];
+            double[] randYred = new double[N];
+
             // Расчитываем точки для графика функции
             double max1 = Math.Sin(Xmin);
             double min1 = max1;
@@ -65,7 +68,7 @@ namespace MonteCarlo
                 }
             }
             Random rnd = new Random();
-            double max=0, min=0;
+            double max=0, min=0, temp1, temp2;
             if (radioButton1.Checked == true) { max = max1; min = min1; }
             else if (radioButton2.Checked == true) { max = max2; min = min2; }
             else if (radioButton3.Checked == true) { max = max3; min = min3; }
@@ -73,11 +76,26 @@ namespace MonteCarlo
             //Генерируем N случайных точек в прямоугольнике Xmin:Xmax/min:max
             for (int i = 0; i < N; i++)
             {
-                randX[i] = rnd.NextDouble() * (Xmax - Xmin) + Xmin;
-                randY[i] = rnd.NextDouble() * (max - min) + min;
-                if ((radioButton1.Checked == true) && (randY[i] <= Math.Sin(randX[i]))) cnt++;
-                else if ((radioButton2.Checked == true) && (randY[i] <= Math.Pow(randX[i],2))) cnt++;
-                else if ((radioButton3.Checked == true) && (randY[i] <= Math.Sqrt(randX[i]))) cnt++;
+                temp1 = rnd.NextDouble() * (Xmax - Xmin) + Xmin;
+                temp2 = rnd.NextDouble() * (max - min) + min;
+                if (radioButton1.Checked == true)
+                {
+                    if (temp2 <= Math.Sin(temp1))
+                    { cnt++; randXred[i] = temp1; randYred[i] = temp2; }
+                    else { randX[i] = temp1; randY[i] = temp2; }
+                }
+                else if (radioButton2.Checked == true)
+                {
+                    if (temp2 <= Math.Pow(temp1,2))
+                    { cnt++; randXred[i] = temp1; randYred[i] = temp2; }
+                    else { randX[i] = temp1; randY[i] = temp2; }
+                }
+                else if (radioButton3.Checked == true)
+                {
+                    if (temp2 <= Math.Sqrt(temp1))
+                    { cnt++; randXred[i] = temp1; randYred[i] = temp2; }
+                    else { randX[i] = temp1; randY[i] = temp2; }
+                }
             }
 
             // Настраиваем оси графика
@@ -87,8 +105,10 @@ namespace MonteCarlo
             chart1.ChartAreas[0].AxisX.MajorGrid.Interval = Step;
             // Добавляем вычисленные значения в графики
             chart1.Series[0].Points.DataBindXY(x, y);
-            // Добавляем случайные точки
+            // Добавляем случайные точки выше графика
             chart1.Series[1].Points.DataBindXY(randX, randY);
+            // Добавляем случайные точки ниже графика
+            chart1.Series[2].Points.DataBindXY(randXred, randYred);
             // Вычисляем значение интеграла
             double itog;
             itog = (Xmax - Xmin) * (max - min) * cnt / N;

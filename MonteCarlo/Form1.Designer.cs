@@ -33,6 +33,7 @@ namespace MonteCarlo
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.textBoxXmin = new System.Windows.Forms.TextBox();
             this.textBoxXmax = new System.Windows.Forms.TextBox();
@@ -102,8 +103,15 @@ namespace MonteCarlo
             series2.Legend = "Legend1";
             series2.MarkerSize = 2;
             series2.Name = "Series2";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series3.Legend = "Legend1";
+            series3.MarkerColor = System.Drawing.Color.Red;
+            series3.MarkerSize = 2;
+            series3.Name = "Series3";
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
+            this.chart1.Series.Add(series3);
             this.chart1.Size = new System.Drawing.Size(726, 439);
             this.chart1.TabIndex = 4;
             this.chart1.Text = "chart1";
